@@ -17,9 +17,20 @@ RUN apt-get update && \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
+# install a modern c++ compiler supporting c++17
+RUN apt-get update && \
+    apt-get install -y software-properties-common
+RUN apt-add-repository 'deb http://deb.debian.org/debian testing main' && \
+    apt-get update
+RUN apt-get install -y g++-10 gcc-10
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 90 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 90
+    
+ENV CXXFLAGS="$CXXFLAGS -std=c++17"
+
 # install python dependencies
 RUN pip install openmim
-RUN pip install torch==2.0.0
+RUN pip install torch
 # ENV CXXFLAGS="$CXXFLAGS -std=c++17"
 RUN mim install mmcv-full==1.7.0
 RUN pip install mmdet==2.27.0
